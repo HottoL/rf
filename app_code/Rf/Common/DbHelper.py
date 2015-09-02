@@ -1,52 +1,40 @@
 # DbHelper.py
 #_*_coding:utf-8_*_
-import threading
-
-class _engine(object):
-    def __init__(self, connect):
-        self._connect = connect
-    def connect(self):
-        return self._connect()
-engine = None
+from System.Db import mcpWrapper
+#import pyodbc
 
 
-class _dbctx(threading.local):
-    def __init__(self):
-        self.connection = None
-        self.transaction = 0
-
-    def is_init(self):
-        return not self.connection is None # return not??
-
-    def init(self):
-        self.connection = _LazyConnection()
-        self.transaction = 0
-
-    def cleanup(self):
-        self.connection.cleanup()
-        self.connection = None
-
-    def cursor(self):
-        return self.connection.cursor()
-_db_ctx = _dbctx()
 
 
-class _connectionctx(object):
-    def  __enter__(self):
-        global _db_ctx
-        self.should_cleanup = False
-        if not _db_ctx.is_init():
-            _db_ctx.init()
-            self.should_cleanup = True
-        return self
 
-    def __exit__(self, exctype, excvalue, traceback):
-        global _db_ctx
-        if self.should_cleanup:
-            _db_ctx.cleanup()
 
-def connection()
-    return _connectionctx()
+
+
+"""
+dbhost = '10.12.0.56'
+dbport = '3306'
+databases = 'd_fanxing'
+username = 'fanxing'
+pwd = "kugou2014"
+
+
+conn = mysql.connector.connect(host=dbhost, port=dbport, user=username, password=pwd, database=databases, use_unicode=True)
+
+#conn_info = ('Driver={MySQL ODBC 5.3 Unicode Driver};Server=%s;Port=%s;Database=%s;User=%s; Password=%s;Option=3;' % (host, port, database, user, pwd))
+#conn = pyodbc.connect(conn_info)
+cursor = conn.cursor()
+
+cursor.execute('SELECT %s FROM d_fanxing_godness.t_room_barrage ORDER BY createTime desc limit 1' % 'fromIp')
+res = cursor.fetchall()
+
+print res
+"""
+
+
+
+
+
+
 
 
 
