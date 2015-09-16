@@ -1,8 +1,10 @@
 # warp a db connection
 import mysql.connector
-import funtools
+import functools
 import threading
+import types
 
+#db connection instance
 class _Engine(object):
     def __init__(self):
         self._host = '10.12.0.56'
@@ -16,6 +18,7 @@ class _Engine(object):
 engine = _Engine()
 
 
+#db_connection instance func
 class _Dbctx(threading.local):
     def __init__(self):
         self.connection = None
@@ -33,7 +36,7 @@ class _Dbctx(threading.local):
         return engine.connect()
 
     def cleanup(self):
-        self.connection.cleanup()
+        self.connection.close()
         self.connection = None
 
     def cursor(self):
@@ -61,7 +64,7 @@ def connection():
 
 # connection decorator
 def with_connection(func):
-    @funtools.wraps(func)
+    @functools.wraps(func)
     def cwrapper(*args, **kw):
         with connection():
             return func(*args, **kw)
@@ -107,10 +110,49 @@ def transaction():
 
 # transaction decorator
 def with_transaction(func):
-    @funtools.wraps(func)
+    @functools.wraps(func)
     def twrapper(*args, **kw):
         with transaction():
             return func(*args, **kw)
     return twrapper
+
+""" class decorator todo
+class With_connection(object):
+    def __init__(self, func):
+        self.wrapped = functools.wraps(func)
+
+    def __call__(self, *args, **kw):
+        with connection():
+            return self.wrapped(*args, **kw)
+
+    def __get__(self, instance, cls):
+        if instance is None:
+            return self
+        else:
+            return types.MethodType(self, instance)
+"""
+
+@with_connection
+def select_one(sql): 
+    cur = _db_ctx.cursor()
+    #cur.execute('SELECT %s FROM d_fanxing_godness.t_room_barrage ORDER BY createTime desc limit 1' % 'fromIp')
+    cur.execute(sql)
+    res = cur.fetchall()   
+    cur.close()
+    return res
+
+@with_connection
+def update(sql):
+    cur = _db_ctx.cursor()
+    cur.execute(sql)
+    _db_ctx.connection.commit()
+    cur.close()
+
+
+if __name__ == '__main__':
+    select_one()
+
+
+
 
 

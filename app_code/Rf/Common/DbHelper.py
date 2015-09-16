@@ -1,11 +1,38 @@
 # DbHelper.py
 #_*_coding:utf-8_*_
-from System.Db import mcpWrapper
-#import pyodbc
+import sys
+sys.path.append('../../')
+
+from System.Db.mcpWrapper import *
 
 
+class DbHelper(object):
+    
+    @with_connection
+    #def query(self, column, dbname, tablename):
+    def query(self):
+        cur = _db_ctx.cursor()
+        cur.execute('SELECT %s FROM d_fanxing_godness.t_room_barrage ORDER BY createTime desc limit 1' % 'fromIp')
+        print cur.fetchall()   
+        cur.close()
+
+    @with_connection
+    def update(self):
+        pass
 
 
+    @with_transaction
+    def querymutil(self):
+        pass
+
+    @with_transaction
+    def updatemutil(self):
+        pass
+
+
+if __name__ == '__main__':
+    DbHelper = DbHelper()
+    DbHelper.query()
 
 
 
